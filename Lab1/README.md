@@ -39,25 +39,10 @@ The following files contain the implementations of the tasks:
 
 ---
 
-## 📜 **How to Run the Code**
+## 🔗 **Explore Other Labs**
 
-To compile and run the programs, follow these steps:
+For more exercises and labs, check out the [main repository](link_to_repo).
 
-### 1. Compile the code:
-   ```bash
-   mpicc -o <output_file_name> <source_file.c>
-
-### **2. Run the program with the desired number of processes:**
-'''bash
-mpirun -np <number_of_processes> <output_file_name>
-
-For example, to run the power calculation code with 4 processes:
-'''bash
-mpicc -o power_calculation power_calculation.c
-mpirun -np 4 power_calculation
 ---
-**🔗 Explore Other Labs**
 
-For more exercises and labs, check out the main repository.
----
 🚀 Happy Learning and Coding! Keep exploring and creating! 💻✨
