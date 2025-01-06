@@ -1,46 +1,56 @@
-# 🚀 Parallel Computing and Architecture (6th Semester)
+# 🚀 **Parallel Computing and Architecture (PCAP) - 6th Semester**
 
-Welcome to my **Parallel Computing and Architecture (PCAP)** repository! This repo includes the **lab exercises** and **projects** completed during my **6th Semester** at **MIT Manipal**, focusing on **parallel computing** and **MPI (Message Passing Interface)**.
+Welcome to my **PCAP (Parallel Computing and Architecture)** repository! This repo showcases the **lab exercises** and **projects** completed during my **6th Semester** at **MIT Manipal**, focusing on **parallel computing** and **MPI (Message Passing Interface)**.
 
 ---
 
 ## 🛠️ **Technologies Used**
 
-- **C Programming**: Core language for development.
-- **MPI**: For parallel programming and inter-process communication.
-- **Makefiles**: Simplify the build process.
+In this course, I have worked with the following technologies:
+
+- **C Programming**: The primary language for implementation.
+- **MPI (Message Passing Interface)**: Used for parallel programming and inter-process communication.
+- **Makefiles**: To streamline the build process and make project management easier.
 
 ---
 
-## 🎯 **Purpose**
+## 🎯 **Purpose of this Repository**
 
-This repo showcases my progress in **PCAP**, featuring:
+This repository contains solutions to **PCAP** lab exercises and projects, focusing on:
 
-- **MPI-based exercises** 🧠
-- **Parallel computing & distributed systems** 💻
-- **Exploration of parallel algorithms** ⚡
+- 📚 **MPI-based parallel exercises**  
+- 💻 **Parallel computing & distributed systems**  
+- ⚡ **Exploring parallel algorithms**  
 
 ---
 
 ## 💡 **Learning Outcomes**
 
-- Implement parallel algorithms using **MPI**.
-- Gain experience in **distributed systems**.
-- Improve **C programming** skills, especially with memory management.
+Throughout this project, I have gained hands-on experience in the following areas:
+
+- 🧠 **Parallel Algorithms**: Developing and implementing parallel algorithms using MPI.
+- 🌐 **Distributed Systems**: Solving complex problems in distributed environments.
+- 🔧 **C Programming**: Enhancing memory management and coding efficiency in C.
 
 ---
 
 ## 🤝 **How to Contribute**
 
-- **Fork** the repo, create a **branch**, and submit a **pull request**.
-- **Open an issue** for suggestions, improvements, or bugs!
+Contributions are welcome! Here's how you can contribute:
+
+1. **Fork** the repo and create a **branch**.
+2. Make your changes, and **submit a pull request**.
+3. **Open an issue** for suggestions, improvements, or bug reports!
 
 ---
 
 ## 🔗 **Connect with Me**
 
+Let’s stay connected! You can explore my other projects and reach out via:
+
 - 🌟 [GitHub Profile](https://github.com/adityagarwal15)
 - 💼 [LinkedIn Profile](https://www.linkedin.com/in/aditya-agarwal-12601b27b/)
+- 🌐 [Portfolio](https://adityagarwal.netlify.app)
 
 ---
 
@@ -48,16 +58,18 @@ This repo showcases my progress in **PCAP**, featuring:
 
 ### **Lab 1: Introduction to MPI & Parallel Computing**
 
-In **Lab 1**, I explored the basics of **MPI** and parallel computing. The tasks included:
+In **Lab 1**, I delved into the basics of **MPI** and parallel computing. Key tasks included:
 
-- 🧮 **Power Calculation** using MPI.
-- 🔢 **Factorial & Fibonacci Calculations** in parallel.
-- 📝 **Even/Odd Processes** printing "Hello" for even ranks and "World" for odd.
-- 🔢 **Simple Calculator** with parallel operations (add, subtract, multiply, divide).
-- 🔠 **Toggling Characters** in a string based on the process rank.
+- 🧮 **Power Calculation** using MPI across multiple processes.
+- 🔢 **Factorial & Fibonacci Calculations**: Using different processes for calculation.
+- 📝 **Even/Odd Processes**: Printing "Hello" for even-ranked processes and "World" for odd-ranked ones.
+- 🔢 **Simple Calculator**: Performing parallel operations (add, subtract, multiply, divide).
+- 🔠 **Toggling Characters**: Manipulating strings based on the rank of the process (e.g., "HELLO" → "hElLo").
 
 ### 📂 [Explore Lab 1 in Detail](./Lab1)
 
 ---
 
 🚀 **Happy Learning and Coding!**
+
+---
