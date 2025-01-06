@@ -41,10 +41,9 @@ The following files contain the implementations of the tasks:
 
 ## 🔗 **Explore Other Labs**
 
-For more exercises and labs, check out the [main repository][./PCAP-Lab](https://github.com/adityagarwal15/PCAP-Lab).
+For more exercises and labs, check out the [main repository](https://github.com/adityagarwal15/PCAP-Lab).
 
 ---
 
-🚀 **Happy Learning and Coding!**
+🚀 **Happy Learning and Coding!** 💻✨
 
----
