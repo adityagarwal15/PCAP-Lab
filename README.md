@@ -73,6 +73,26 @@ In **Lab 2**, I explored point-to-point communication using MPI. Key tasks inclu
 
 ---
 
+### **Lab 3: Collective Communications in MPI**
+
+In **Lab 3**, I explored collective communication techniques using MPI. Key tasks included:
+
+- 🔢 **Distributed Factorial Calculation**:  
+  The root process reads an integer `N` and distributes values among processes. Each process calculates the factorial of its assigned value, and the root process gathers all the results to compute their sum using collective routines like `MPI_Scatter` and `MPI_Reduce`.
+
+- 📊 **Array Average Computation**:  
+  The root process reads a 1D array of size `N × M` and distributes `M` elements to each process. Each process computes the average of its elements and sends it back to the root, which computes the total average using `MPI_Scatter` and `MPI_Gather`.
+
+- 🔍 **Counting Non-Vowels**:  
+  The root process reads a string and divides it equally among processes. Each process counts the non-vowel characters in its substring and sends the count to the root. The root process displays the counts from all processes and the total count using `MPI_Scatter` and `MPI_Gather`.
+
+- 🔀 **String Interleaving**:  
+  The root process reads two strings of equal length, divides the strings into segments, and distributes the segments to all processes. Each process interleaves characters from the corresponding substrings, and the root gathers the interleaved segments to form and display the final result using `MPI_Scatter`, `MPI_Gather`, and `MPI_Bcast`.
+
+### 📂 [Explore Lab 3 in Detail](./Lab3)
+
+---
+
 🚀 **Happy Learning and Coding!**
 
 ---
