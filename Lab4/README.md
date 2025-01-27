@@ -11,7 +11,7 @@ Here are the key tasks I tackled in this lab:
 
 1. **Factorial Sum Calculation using `MPI_Reduce`** (Solved Example):  
    Implemented a program where `N` processes calculate the sum of factorials from 1! to N! using `MPI_Reduce` to collect results at the root process. This is the **solved example** provided in the lab instructions and showcases how to perform reduction operations.  
-   *File: `factorial_reduce.c`*
+   *File: `factorial_sum_solved_example.c`*
    
 2. **Factorial Sum Calculation using `MPI_Scan`**:  
    Designed a program similar to the previous one, but used `MPI_Scan` to perform a scan operation, computing the partial sums of factorials across processes.
@@ -42,11 +42,11 @@ By completing this lab, I enhanced my skills in:
 
 The following files contain the implementations of the tasks:
 
-- **`factorial_reduce.c`**: **Solved example** for calculating the sum of factorials using `MPI_Reduce`.
-- **`factorial_scan.c`**: Code implementing factorial sum calculation using `MPI_Scan` and error-handling routines.
+- **`factorial_sum_solved_example.c`**: **Solved example** for calculating the sum of factorials using `MPI_Reduce`.
+- **`factorial_sum.c`**: Code implementing factorial sum calculation using `MPI_Scan` and error-handling routines.
 - **`matrix_search.c`**: Program for matrix search, where the element is searched across processes and results are gathered.
-- **`matrix_transformation.c`**: Matrix transformation program using four processes to compute the desired transformation.
-- **`pattern_generation.c`**: Pattern generation program where each character in the word is repeated according to its position using `N` processes.
+- **`matrix_transform.c`**: Matrix transformation program using four processes to compute the desired transformation.
+- **`mpi_word_pattern.c`**: Pattern generation program where each character in the word is repeated according to its position using `N` processes.
 
 ---
 
