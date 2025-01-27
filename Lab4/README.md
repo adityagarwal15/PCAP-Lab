@@ -9,7 +9,7 @@ In this lab, I explored the advanced topics of **collective communications** and
 
 Here are the key tasks I tackled in this lab:
 
-1. **Factorial Sum Calculation using MPI_Reduce**: Implemented a program where `N` processes calculate the sum of factorials from 1! to N! using `MPI_Reduce` to collect results at the root process.
+1. **Factorial Sum Calculation using MPI_Reduce**: Implemented a program where `N` processes calculate the sum of factorials from 1! to N! using `MPI_Reduce` to collect results at the root process. (This is the solved example `factorial_reduce.c`)
 2. **Factorial Sum Calculation using MPI_Scan**: Designed a program similar to the previous one, but used `MPI_Scan` to perform a scan operation, computing the partial sums of factorials across processes.
 3. **Matrix Search**: Wrote a program to read a 3x3 matrix and search for a user-entered element. The search is performed using 3 processes, and the occurrences of the element are computed in parallel.
 4. **Matrix Transformation**: Developed a program that reads a 4x4 matrix and performs a transformation where each element of the matrix is multiplied by its row index and column index. This transformation is distributed across four processes.
@@ -32,7 +32,7 @@ By completing this lab, I enhanced my skills in:
 
 The following files contain the implementations of the tasks:
 
-- **`factorial_reduce.c`**: MPI program for calculating the sum of factorials using `MPI_Reduce`.
+- **`factorial_reduce.c`**: **Solved example** for calculating the sum of factorials using `MPI_Reduce`.
 - **`factorial_scan.c`**: Code implementing factorial sum calculation using `MPI_Scan` and error-handling routines.
 - **`matrix_search.c`**: Program for matrix search, where the element is searched across processes and results are gathered.
 - **`matrix_transformation.c`**: Matrix transformation program using four processes to compute the desired transformation.
