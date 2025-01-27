@@ -9,11 +9,21 @@ In this lab, I explored the advanced topics of **collective communications** and
 
 Here are the key tasks I tackled in this lab:
 
-1. **Factorial Sum Calculation using MPI_Reduce**: Implemented a program where `N` processes calculate the sum of factorials from 1! to N! using `MPI_Reduce` to collect results at the root process. (This is the solved example `factorial_reduce.c`)
-2. **Factorial Sum Calculation using MPI_Scan**: Designed a program similar to the previous one, but used `MPI_Scan` to perform a scan operation, computing the partial sums of factorials across processes.
-3. **Matrix Search**: Wrote a program to read a 3x3 matrix and search for a user-entered element. The search is performed using 3 processes, and the occurrences of the element are computed in parallel.
-4. **Matrix Transformation**: Developed a program that reads a 4x4 matrix and performs a transformation where each element of the matrix is multiplied by its row index and column index. This transformation is distributed across four processes.
-5. **Pattern Generation**: Created a program that reads a word of length `N` and generates a new word by repeating each character according to its position in the string. This is done using `N` processes, including the root process, and the result is displayed at the root.
+1. **Factorial Sum Calculation using `MPI_Reduce`** (Solved Example):  
+   Implemented a program where `N` processes calculate the sum of factorials from 1! to N! using `MPI_Reduce` to collect results at the root process. This is the **solved example** provided in the lab instructions and showcases how to perform reduction operations.  
+   *File: `factorial_reduce.c`*
+   
+2. **Factorial Sum Calculation using `MPI_Scan`**:  
+   Designed a program similar to the previous one, but used `MPI_Scan` to perform a scan operation, computing the partial sums of factorials across processes.
+
+3. **Matrix Search**:  
+   Wrote a program to read a 3x3 matrix and search for a user-entered element. The search is performed using 3 processes, and the occurrences of the element are computed in parallel.
+
+4. **Matrix Transformation**:  
+   Developed a program that reads a 4x4 matrix and performs a transformation where each element of the matrix is multiplied by its row index and column index. This transformation is distributed across four processes.
+
+5. **Pattern Generation**:  
+   Created a program that reads a word of length `N` and generates a new word by repeating each character according to its position in the string. This is done using `N` processes, including the root process, and the result is displayed at the root.
 
 ---
 
