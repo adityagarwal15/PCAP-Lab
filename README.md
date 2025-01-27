@@ -175,10 +175,4 @@ In **Lab 10**, I explored different memory types in CUDA and synchronization tec
 
 ---
 
-## 📚 **References**
-
-A list of resources and references used throughout the course.
-
----
-
 🚀 **Happy Learning and Coding!**
