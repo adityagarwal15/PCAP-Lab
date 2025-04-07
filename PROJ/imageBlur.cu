@@ -1,4 +1,3 @@
-
 #include <cuda_runtime.h>
 #include <device_launch_parameters.h>
 #include <stdio.h>
@@ -11,9 +10,7 @@
 int xDimension;
 int yDimension;
 
-typedef struct {
-    unsigned char r, g, b, a;
-} uchar4;
+// Remove the custom uchar4 definition since it's already defined by CUDA
 
 void readImage(char *filename, uchar4 **image);
 void writeImage(uchar4 *image, char *filename, int width, int height);
@@ -37,9 +34,10 @@ __global__ void unsharedBlurring(uchar4 *image, uchar4 *imageOutput, int width, 
                 } else {
                     pixel = make_uchar4(0, 0, 0, 0); // Set to black if out of bounds
                 }
-                average.x += pixel.r;
-                average.y += pixel.g;
-                average.z += pixel.b;
+                average.x += pixel.x;  // Change .r to .x
+                average.y += pixel.y;  // Change .g to .y
+                average.z += pixel.z;  // Change .b to .z
+                // Note: Leave out pixel.a since you're not using it
             }
         }
 
@@ -82,9 +80,9 @@ __global__ void sharedBlurring(uchar4 *image, uchar4 *imageOutput, int width, in
                     int blurCol = threadIdx.x + j;
 
                     pixel = chunk[blurRow][blurCol];
-                    average.x += pixel.r;
-                    average.y += pixel.g;
-                    average.z += pixel.b;
+                    average.x += pixel.x;  // Change .r to .x
+                    average.y += pixel.y;  // Change .g to .y
+                    average.z += pixel.z;  // Change .b to .z
                 }
             }
 
@@ -106,17 +104,23 @@ void readImage(char *filename, uchar4 **image) {
         exit(1);
     }
 
-    // Simple PPM image parsing (only P3 format)
-    fscanf(file, "P6\n");
+    // Simple PPM image parsing (only P6 format)
+    char format[3];
+    fscanf(file, "%2s\n", format);
+    if (strcmp(format, "P6") != 0) {
+        printf("Only P6 PPM format is supported\n");
+        exit(1);
+    }
+
     int width, height, maxColorValue;
     fscanf(file, "%d %d\n%d\n", &width, &height, &maxColorValue);
 
     *image = (uchar4 *)malloc(width * height * sizeof(uchar4));
     for (int i = 0; i < width * height; i++) {
-        (*image)[i].r = fgetc(file);
-        (*image)[i].g = fgetc(file);
-        (*image)[i].b = fgetc(file);
-        (*image)[i].a = 255;  // Set alpha to 255 for full opacity
+        (*image)[i].x = fgetc(file);  // Change .r to .x
+        (*image)[i].y = fgetc(file);  // Change .g to .y
+        (*image)[i].z = fgetc(file);  // Change .b to .z
+        (*image)[i].w = 255;          // Change .a to .w
     }
 
     fclose(file);
@@ -134,9 +138,9 @@ void writeImage(uchar4 *image, char *filename, int width, int height) {
     fprintf(file, "P6\n%d %d\n255\n", width, height);
 
     for (int i = 0; i < width * height; i++) {
-        fputc(image[i].r, file);
-        fputc(image[i].g, file);
-        fputc(image[i].b, file);
+        fputc(image[i].x, file);  // Change .r to .x
+        fputc(image[i].y, file);  // Change .g to .y
+        fputc(image[i].z, file);  // Change .b to .z
     }
 
     fclose(file);
@@ -154,10 +158,11 @@ int main(int argc, char **argv) {
 
     uchar4 *hostImage;
     uchar4 *deviceImage, *deviceImageOutput;
-    size_t imageSize = xDimension * yDimension * sizeof(uchar4);
 
     // Read input image
     readImage(inputImageFile, &hostImage);
+    
+    size_t imageSize = xDimension * yDimension * sizeof(uchar4);
 
     // Allocate memory on the device
     cudaMalloc((void **)&deviceImage, imageSize);
