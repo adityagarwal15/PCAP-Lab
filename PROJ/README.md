@@ -40,7 +40,9 @@ Where:
 
 Example
 
+```bash
 ./imageBlur input.ppm blurred_output.ppm 1
+```
 
 This will process input.ppm using the shared memory implementation and save the result as blurred_output.ppm.
 Input Image Format
