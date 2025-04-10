@@ -9,20 +9,12 @@
 #define DEFAULT_BLOCK_SIZE 16
 #define DEFAULT_OUTPUT_WIDTH 0
 #define DEFAULT_OUTPUT_HEIGHT 0
-#define SOBEL_X_SIZE 3
-#define SOBEL_Y_SIZE 3
 
 typedef enum {
     BLUR_BOX = 0,
     BLUR_GAUSSIAN = 1,
     BLUR_MEDIAN = 2
 } BlurType;
-
-typedef enum {
-    PROCESSING_NONE = 0,
-    PROCESSING_GRAYSCALE = 1,
-    PROCESSING_EDGE_DETECTION = 2
-} ProcessingType;
 
 // Function prototypes
 void printHelp();
@@ -37,11 +29,6 @@ void resizeAndBlur(const uchar4 *input, uchar4 *output,
                   int blurSize, int blockSize);
 __global__ void blurKernel(const uchar4 *input, uchar4 *output, 
                           int width, int height, int blurSize);
-// New prototypes for grayscale and edge detection
-void applyGrayscale(const uchar4 *input, uchar4 *output, int width, int height, int blockSize);
-void applyEdgeDetection(const uchar4 *input, uchar4 *output, int width, int height, int blockSize);
-__global__ void grayscaleKernel(const uchar4 *input, uchar4 *output, int width, int height);
-__global__ void edgeDetectionKernel(const uchar4 *input, uchar4 *output, int width, int height);
 
 // Help function
 void printHelp() {
@@ -56,8 +43,6 @@ void printHelp() {
     printf("  -m <mode>        Memory mode (0=global, 1=shared) [default: 1]\n");
     printf("  -w <width>       Output image width (0=use input width) [default: 0]\n");
     printf("  -h <height>      Output image height (0=use input height) [default: 0]\n");
-    printf("  -g               Apply grayscale conversion\n");
-    printf("  -e               Apply edge detection (applies grayscale first)\n");
 }
 
 // Image I/O functions
@@ -167,80 +152,6 @@ __global__ void blurKernel(const uchar4 *input, uchar4 *output,
     }
 }
 
-// New CUDA kernel for grayscaling
-__global__ void grayscaleKernel(const uchar4 *input, uchar4 *output, int width, int height) {
-    int col = blockIdx.x * blockDim.x + threadIdx.x;
-    int row = blockIdx.y * blockDim.y + threadIdx.y;
-    
-    if (col < width && row < height) {
-        int idx = row * width + col;
-        uchar4 pixel = input[idx];
-        
-        // Convert to grayscale using weighted RGB values
-        // Common weights: R: 0.299, G: 0.587, B: 0.114
-        unsigned char gray = (unsigned char)(0.299f * pixel.x + 0.587f * pixel.y + 0.114f * pixel.z);
-        
-        uchar4 result;
-        result.x = gray;
-        result.y = gray;
-        result.z = gray;
-        result.w = 255;
-        
-        output[idx] = result;
-    }
-}
-
-// New CUDA kernel for edge detection using Sobel operator
-__global__ void edgeDetectionKernel(const uchar4 *input, uchar4 *output, int width, int height) {
-    int col = blockIdx.x * blockDim.x + threadIdx.x;
-    int row = blockIdx.y * blockDim.y + threadIdx.y;
-    
-    if (col < width && row < height) {
-        // Skip the border pixels
-        if (col == 0 || col == width - 1 || row == 0 || row == height - 1) {
-            output[row * width + col] = make_uchar4(0, 0, 0, 255);
-            return;
-        }
-        
-        // Sobel operators
-        int sobelX[3][3] = {
-            {-1, 0, 1},
-            {-2, 0, 2},
-            {-1, 0, 1}
-        };
-        
-        int sobelY[3][3] = {
-            {-1, -2, -1},
-            {0, 0, 0},
-            {1, 2, 1}
-        };
-        
-        int gx = 0;
-        int gy = 0;
-        
-        // Apply Sobel operators - working with grayscale input
-        for (int i = -1; i <= 1; i++) {
-            for (int j = -1; j <= 1; j++) {
-                uchar4 pixel = input[(row + i) * width + (col + j)];
-                // Assuming input is already grayscale, so we just use the x component
-                int pixelValue = pixel.x;
-                
-                gx += pixelValue * sobelX[i+1][j+1];
-                gy += pixelValue * sobelY[i+1][j+1];
-            }
-        }
-        
-        // Calculate gradient magnitude
-        int magnitude = (int)sqrtf((float)(gx*gx + gy*gy));
-        
-        // Clamp to [0, 255]
-        magnitude = min(max(magnitude, 0), 255);
-        
-        // Set output pixel (black and white edge image)
-        output[row * width + col] = make_uchar4(magnitude, magnitude, magnitude, 255);
-    }
-}
-
 // Updated applyBlur to use CUDA kernel
 void applyBlur(const uchar4 *input, uchar4 *output, int width, int height, 
               int blurSize, float sigma, BlurType blurType, 
@@ -280,97 +191,6 @@ void applyBlur(const uchar4 *input, uchar4 *output, int width, int height,
     cudaFree(d_input);
     cudaFree(d_output);
     cudaFree(d_temp);
-}
-
-// New function for grayscaling
-void applyGrayscale(const uchar4 *input, uchar4 *output, int width, int height, int blockSize) {
-    uchar4 *d_input, *d_output;
-    size_t size = width * height * sizeof(uchar4);
-    float kernelTime = 0.0f;
-    
-    // Allocate device memory
-    cudaMalloc((void **)&d_input, size);
-    cudaMalloc((void **)&d_output, size);
-    
-    // Copy input to device
-    cudaMemcpy(d_input, input, size, cudaMemcpyHostToDevice);
-    
-    dim3 threadsPerBlock(blockSize, blockSize);
-    dim3 blocksPerGrid((width + blockSize - 1) / blockSize,
-                      (height + blockSize - 1) / blockSize);
-    
-    cudaEvent_t start, stop;
-    cudaEventCreate(&start);
-    cudaEventCreate(&stop);
-    
-    cudaEventRecord(start);
-    
-    // Execute grayscale kernel
-    grayscaleKernel<<<blocksPerGrid, threadsPerBlock>>>(d_input, d_output, width, height);
-    
-    cudaEventRecord(stop);
-    cudaEventSynchronize(stop);
-    
-    cudaEventElapsedTime(&kernelTime, start, stop);
-    
-    printf("Grayscale kernel execution time: %.3f ms\n", kernelTime);
-    
-    // Copy result back to host
-    cudaMemcpy(output, d_output, size, cudaMemcpyDeviceToHost);
-    
-    // Clean up
-    cudaFree(d_input);
-    cudaFree(d_output);
-    cudaEventDestroy(start);
-    cudaEventDestroy(stop);
-}
-
-// New function for edge detection
-void applyEdgeDetection(const uchar4 *input, uchar4 *output, int width, int height, int blockSize) {
-    uchar4 *d_input, *d_output, *d_grayscale;
-    size_t size = width * height * sizeof(uchar4);
-    float kernelTime = 0.0f;
-    
-    // Allocate device memory
-    cudaMalloc((void **)&d_input, size);
-    cudaMalloc((void **)&d_grayscale, size);
-    cudaMalloc((void **)&d_output, size);
-    
-    // Copy input to device
-    cudaMemcpy(d_input, input, size, cudaMemcpyHostToDevice);
-    
-    dim3 threadsPerBlock(blockSize, blockSize);
-    dim3 blocksPerGrid((width + blockSize - 1) / blockSize,
-                      (height + blockSize - 1) / blockSize);
-    
-    cudaEvent_t start, stop;
-    cudaEventCreate(&start);
-    cudaEventCreate(&stop);
-    
-    cudaEventRecord(start);
-    
-    // First convert to grayscale (required for edge detection)
-    grayscaleKernel<<<blocksPerGrid, threadsPerBlock>>>(d_input, d_grayscale, width, height);
-    
-    // Then perform edge detection on the grayscale image
-    edgeDetectionKernel<<<blocksPerGrid, threadsPerBlock>>>(d_grayscale, d_output, width, height);
-    
-    cudaEventRecord(stop);
-    cudaEventSynchronize(stop);
-    
-    cudaEventElapsedTime(&kernelTime, start, stop);
-    
-    printf("Edge detection kernel execution time: %.3f ms\n", kernelTime);
-    
-    // Copy result back to host
-    cudaMemcpy(output, d_output, size, cudaMemcpyDeviceToHost);
-    
-    // Clean up
-    cudaFree(d_input);
-    cudaFree(d_grayscale);
-    cudaFree(d_output);
-    cudaEventDestroy(start);
-    cudaEventDestroy(stop);
 }
 
 // Kernel for resize and blur
@@ -481,7 +301,6 @@ int main(int argc, char **argv) {
     char inputImageFile[256] = {0};
     char outputImageFile[256] = {0};
     uchar4 *hostImage = NULL;
-    uchar4 *tempImage = NULL;
 
     int blurSize = DEFAULT_BLUR_SIZE;
     int blockSize = DEFAULT_BLOCK_SIZE;
@@ -491,8 +310,6 @@ int main(int argc, char **argv) {
     bool useSharedMemory = true;
     int outputWidth = DEFAULT_OUTPUT_WIDTH;
     int outputHeight = DEFAULT_OUTPUT_HEIGHT;
-    bool applyGray = false;
-    bool applyEdge = false;
     
     int arg = 1;
     while (arg < argc && argv[arg][0] == '-') {
@@ -508,8 +325,6 @@ int main(int argc, char **argv) {
                 if (strcmp(argv[arg], "-h") == 0) { printHelp(); return 0; }
                 if (++arg < argc) outputHeight = atoi(argv[arg]); 
                 break;
-            case 'g': applyGray = true; break;
-            case 'e': applyEdge = true; applyGray = true; break; // Edge detection requires grayscale
             default: printf("Unknown option: %s\n", argv[arg]); printHelp(); return 1;
         }
         arg++;
@@ -536,7 +351,6 @@ int main(int argc, char **argv) {
     printf("Processing image: %s -> %s\n", inputImageFile, outputImageFile);
     printf("Input dimensions: %d x %d\n", xDimension, yDimension);
     
-    // Resize and blur if dimensions changed
     if (finalWidth != xDimension || finalHeight != yDimension) {
         printf("Output dimensions: %d x %d (resizing enabled)\n", finalWidth, finalHeight);
         resizeAndBlur(hostImage, outputImage, xDimension, yDimension, 
@@ -545,38 +359,6 @@ int main(int argc, char **argv) {
         printf("Output dimensions: %d x %d\n", finalWidth, finalHeight);
         applyBlur(hostImage, outputImage, xDimension, yDimension, 
                  blurSize, sigma, blurType, passes, useSharedMemory, blockSize);
-    }
-    
-    // Apply grayscale if requested
-    if (applyGray && !applyEdge) {
-        printf("Applying grayscale conversion...\n");
-        tempImage = (uchar4 *)malloc(finalWidth * finalHeight * sizeof(uchar4));
-        if (!tempImage) {
-            printf("Error: Failed to allocate memory for temporary image.\n");
-            free(hostImage);
-            free(outputImage);
-            return 1;
-        }
-        
-        memcpy(tempImage, outputImage, finalWidth * finalHeight * sizeof(uchar4));
-        applyGrayscale(tempImage, outputImage, finalWidth, finalHeight, blockSize);
-        free(tempImage);
-    }
-    
-    // Apply edge detection if requested
-    if (applyEdge) {
-        printf("Applying edge detection...\n");
-        tempImage = (uchar4 *)malloc(finalWidth * finalHeight * sizeof(uchar4));
-        if (!tempImage) {
-            printf("Error: Failed to allocate memory for temporary image.\n");
-            free(hostImage);
-            free(outputImage);
-            return 1;
-        }
-        
-        memcpy(tempImage, outputImage, finalWidth * finalHeight * sizeof(uchar4));
-        applyEdgeDetection(tempImage, outputImage, finalWidth, finalHeight, blockSize);
-        free(tempImage);
     }
     
     writeImage(outputImage, outputImageFile, finalWidth, finalHeight);
