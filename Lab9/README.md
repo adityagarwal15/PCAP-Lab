@@ -7,7 +7,7 @@ This lab focuses on **advanced parallel matrix operations** using CUDA programmi
 ## 🧑‍💻 **Lab Exercises**
 
 ### 1. **Sparse Matrix-Vector Multiplication using CSR Format**
-Implement a CUDA program that performs parallel Sparse Matrix-Vector multiplication using the Compressed Sparse Row (CSR) storage format.
+Implement a CUDA program that performs parallel Sparse Matrix-Vector multiplication using the Compressed Sparse Row (CSR) storage format
 
 #### **Specifications:**
 - Represent the input sparse matrix in CSR format in the host code
